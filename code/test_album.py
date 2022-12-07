@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from album import Album
+from album import Album, RepeatedStickers
 import pytest
 
 
@@ -68,7 +68,49 @@ class TestAlbum:
         objeto.add_figure('BRA1')
         assert objeto.check_is_present('BRA1')        
 
-    def test_method_check_is_present_2(self):
+    def test_method_check_is_present_fail(self):
         objeto = Album()
         assert len(objeto.figurinhas_coladas) == 0
         assert not objeto.check_is_present('BRA1')  
+
+    def test_method_is_pasted_1(self):
+        objeto = Album()
+        objeto.add_figure('BRA1')
+        objeto.add_figure('BRA2')
+        assert objeto.is_pasted('BRA1')
+        assert objeto.is_pasted('BRA2')
+        assert not objeto.is_pasted('BRA3')
+
+    def test_report_pasted(self):
+        objeto = Album()
+        objeto.add_figure('BRA1')
+        objeto.add_figure('BRA2')
+        assert objeto.figurinhas_coladas == ['BRA1','BRA2']
+    
+    def test_property_missing_pictures_1(self):
+        objeto = Album()
+        objeto.add_figure('BRA1')
+        assert type(objeto.figurinhas_faltantes) == list
+        assert 'BRA1' not in objeto.figurinhas_faltantes
+        assert 'BRA2' in objeto.figurinhas_faltantes
+        assert '00' in objeto.figurinhas_faltantes
+    
+    def test_property_missing_pictures_2(self):
+        objeto = Album()
+        objeto.add_figure('BRA2')
+        assert type(objeto.figurinhas_faltantes) == list
+        assert 'BRA1' in objeto.figurinhas_faltantes
+        assert 'C1' in objeto.figurinhas_faltantes
+        assert 'BRA2' not in objeto.figurinhas_faltantes
+        assert '00' in objeto.figurinhas_faltantes
+
+
+class TestRepeatedStickersAlbum:
+    def test_instance_declared(self):
+        objeto = RepeatedStickers()
+        assert isinstance(objeto, RepeatedStickers)
+
+    def test_repeatedstickers_structure(self):
+        objeto = RepeatedStickers()
+        assert type(objeto.repetidas) is list
+        assert len(objeto.repetidas) == 0

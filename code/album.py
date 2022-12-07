@@ -1,11 +1,31 @@
 
+class RepeatedStickers:
+    def __init__(self):
+        self._figurinhas_repetidas = []
+
+    @property
+    def repetidas(self):
+        return self._figurinhas_repetidas
+
 
 class Album:
     def __init__(self):
         self._paises = self._create_countries()
         self._figurinhas = self._create_figure()
-        self.figurinhas_coladas = []
-        
+        self._figurinhas_coladas_no_album = []
+
+    @property
+    def figurinhas(self):
+        return self._figurinhas
+    
+    @property
+    def figurinhas_coladas(self):
+        return self._figurinhas_coladas_no_album
+    
+    @property
+    def figurinhas_faltantes(self):
+        return list(set(self.figurinhas) - set(self.figurinhas_coladas))
+    
     def _create_countries(self):
         _paises = ['qat', 'ecu', 'sen', 'ned']
         _paises += ['eng', 'irn', 'usa', 'wal']
@@ -30,10 +50,13 @@ class Album:
         return figures
 
     def add_figure(self, figure):
-        if figure in self._figurinhas and not self.check_is_present(figure):
+        if figure in self.figurinhas and not self.check_is_present(figure):
                 self.figurinhas_coladas.append(figure)
                 return True
         return False
 
     def check_is_present(self, figure):
         return figure in self.figurinhas_coladas
+
+    def is_pasted(self, figure):
+        return self.check_is_present(figure)
