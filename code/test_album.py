@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from album import Album, RepeatedStickers
+from album import Album, RepeatedStickers, StickerException
 import pytest
 
 
@@ -46,13 +46,14 @@ class TestAlbum:
         assert objeto.figurinhas_coladas == ['BRA1']
 
     def test_method_add_figure_fail_1(self):
+        msg_erro = "Não existe essa figurinha"
         objeto = Album()
         assert len(objeto.figurinhas_coladas) == 0
         assert objeto.figurinhas_coladas == []
-        assert not objeto.add_figure('BRA40')
-        assert len(objeto.figurinhas_coladas) == 0
-        assert objeto.figurinhas_coladas == []
-
+        with pytest.raises(StickerException) as error:
+            objeto.add_figure('BRA40')
+        assert str(error.value) == msg_erro
+        
     def test_method_add_figure_fail_2(self):
         objeto = Album()
         assert len(objeto.figurinhas_coladas) == 0
@@ -104,6 +105,10 @@ class TestAlbum:
         assert 'BRA2' not in objeto.figurinhas_faltantes
         assert '00' in objeto.figurinhas_faltantes
 
+    def test_str_repr(self):
+        objeto = Album()
+        assert str(objeto) == "Album da copa do Quatar"
+        assert repr(objeto) == "Album da copa do Quatar"
 
 class TestRepeatedStickersAlbum:
     def test_instance_declared(self):
@@ -114,3 +119,73 @@ class TestRepeatedStickersAlbum:
         objeto = RepeatedStickers()
         assert type(objeto.repetidas) is list
         assert len(objeto.repetidas) == 0
+
+    def test_default_attributes(self):
+        objeto = RepeatedStickers()
+        assert isinstance(objeto._figurinhas, list)
+        assert len(objeto._figurinhas) == 678
+        assert isinstance(objeto._paises, list)
+        assert len(objeto._paises) == 32
+        assert objeto._paises[0] == 'QAT'
+        assert len(objeto.repetidas) == 0
+
+    def test_method_add_figure_ok_1(self):
+        objeto = RepeatedStickers()
+        assert len(objeto.repetidas) == 0
+        assert objeto.repetidas == []
+        assert objeto.add_figure('BRA1')
+        assert len(objeto.repetidas) == 1
+        assert objeto.repetidas == ['BRA1']
+
+    def test_method_add_figure_ok_2(self):
+        objeto = RepeatedStickers()
+        assert len(objeto.repetidas) == 0
+        assert objeto.repetidas == []
+        assert objeto.add_figure('BRA1')
+        objeto.add_figure('BRA2')
+        assert len(objeto.repetidas) == 2
+        assert objeto.repetidas == ['BRA1','BRA2']
+
+    def test_method_add_figure_fail_1(self):
+        msg_erro = "Não existe essa figurinha"
+        objeto = RepeatedStickers()
+        assert len(objeto.repetidas) == 0
+        assert objeto.repetidas == []
+        assert objeto.add_figure('BRA1')
+        with pytest.raises(StickerException) as error:
+            objeto.add_figure('BRA40')
+        assert str(error.value) == msg_erro
+
+    def test_method_remove_ok_1(self):
+        objeto = RepeatedStickers()
+        objeto.add_figure('BRA1')
+        objeto.add_figure('BRA2')
+        assert len(objeto.repetidas) == 2
+        assert objeto.repetidas == ['BRA1','BRA2']
+        objeto.remove('BRA2')
+        assert objeto.repetidas == ['BRA1']
+        assert len(objeto.repetidas) == 1
+
+    def test_method_remove_ok_2(self):
+        objeto = RepeatedStickers()
+        objeto.add_figure('BRA1')
+        objeto.add_figure('BRA1')
+        assert len(objeto.repetidas) == 2
+        assert objeto.repetidas == ['BRA1','BRA1']
+        objeto.remove('BRA2')
+        assert objeto.repetidas == ['BRA1','BRA1']
+        assert len(objeto.repetidas) == 2
+
+    def test_method_remove_fail_1(self):
+        msg_erro = "Não existe essa figurinha"
+        objeto = RepeatedStickers()
+        assert len(objeto.repetidas) == 0
+        assert objeto.repetidas == []
+        with pytest.raises(StickerException) as error:
+            objeto.remove('BRA40')
+        assert str(error.value) == msg_erro
+    
+    def test_str_repr(self):
+        objeto = RepeatedStickers()
+        assert str(objeto) == "Estrutura de figurinhas repetidas"
+        assert repr(objeto) == "Estrutura de figurinhas repetidas"
